@@ -719,23 +719,23 @@ footer span { color:var(--neon); }
 
         <div class="skill-row">
           <div class="skill-top"><span>Quick Learning</span><span style="color:var(--neon)">95%</span></div>
-          <div class="skill-bar"><div class="skill-fill" data-width="95"></div></div>
+          <div class="skill-bar"><div class="skill-fill" data-width="95" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100" aria-label="Quick Learning 95%"></div></div>
         </div>
         <div class="skill-row">
           <div class="skill-top"><span>Problem Solving</span><span style="color:var(--neon)">88%</span></div>
-          <div class="skill-bar"><div class="skill-fill" data-width="88"></div></div>
+          <div class="skill-bar"><div class="skill-fill" data-width="88" role="progressbar" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100" aria-label="Problem Solving 88%"></div></div>
         </div>
         <div class="skill-row">
           <div class="skill-top"><span>Science &amp; Research</span><span style="color:var(--neon)">82%</span></div>
-          <div class="skill-bar"><div class="skill-fill" data-width="82"></div></div>
+          <div class="skill-bar"><div class="skill-fill" data-width="82" role="progressbar" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100" aria-label="Science &amp; Research 82%"></div></div>
         </div>
         <div class="skill-row">
           <div class="skill-top"><span>Creative Thinking</span><span style="color:var(--neon)">90%</span></div>
-          <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
+          <div class="skill-bar"><div class="skill-fill" data-width="90" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" aria-label="Creative Thinking 90%"></div></div>
         </div>
         <div class="skill-row">
           <div class="skill-top"><span>Coding / Tech</span><span style="color:var(--neon)">78%</span></div>
-          <div class="skill-bar"><div class="skill-fill" data-width="78"></div></div>
+          <div class="skill-bar"><div class="skill-fill" data-width="78" role="progressbar" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100" aria-label="Coding / Tech 78%"></div></div>
         </div>
       </div>
     </div>
@@ -975,7 +975,10 @@ window.addEventListener('load', function() {
   // Init renderer
   try {
     renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-  } catch (e) { return; }
+  } catch (e) {
+    console.warn('AJTechy: WebGL not available, 3D background disabled.');
+    return;
+  }
 
   renderer.setSize(width, height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -1008,7 +1011,9 @@ window.addEventListener('load', function() {
 
   // ── PARTICLE SYSTEM ──
   (function buildParticles() {
-    var count = 1200;
+    // Reduce particle count for reduced-motion preference or low pixel density
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var count = prefersReduced ? 300 : (window.devicePixelRatio < 1.5 ? 700 : 1200);
     var positions = new Float32Array(count * 3);
     var colors = new Float32Array(count * 3);
     var sizes = new Float32Array(count);
@@ -1154,7 +1159,7 @@ window.addEventListener('load', function() {
     if (document.hidden) {
       cancelAnimationFrame(rafId);
     } else {
-      animate();
+      rafId = requestAnimationFrame(animate);
     }
   });
 })();
@@ -1346,7 +1351,7 @@ window.addEventListener('load', function() {
     var ok  = false;
 
     if (input.type === 'email') {
-      ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim());
+      ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(input.value.trim());
     } else {
       ok = input.value.trim().length > 0;
     }
